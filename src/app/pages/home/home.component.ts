@@ -21,6 +21,7 @@ export class HomeComponent {
   uploadSuccessMessage: string | null = null;
   uploadErrorMessage: string | null = null;
   copyMessage: string | null = null;
+  pastedQuizJson = '';
 
   private readonly quizService = inject(QuizService);
   private readonly quizSession = inject(QuizSessionService);
@@ -99,13 +100,7 @@ Put inside a code block and a JSON file if possible.
     reader.onload = () => {
       try {
         const fileContents = typeof reader.result === 'string' ? reader.result : '';
-        const parsedQuiz: unknown = JSON.parse(fileContents);
-
-        this.validateBasicQuizShape(parsedQuiz);
-
-        const quiz = this.quizService.parseQuizData(parsedQuiz);
-        this.quizSession.setQuiz(quiz);
-        this.uploadSuccessMessage = `"${quiz.title}" is ready.`;
+        this.loadQuizJson(fileContents);
       } catch (error) {
         this.quizSession.resetSession();
         this.uploadErrorMessage = error instanceof Error
@@ -122,6 +117,25 @@ Put inside a code block and a JSON file if possible.
     };
 
     reader.readAsText(file);
+  }
+
+  loadPastedQuiz(): void {
+    this.uploadSuccessMessage = null;
+    this.uploadErrorMessage = null;
+
+    if (this.pastedQuizJson.trim().length === 0) {
+      this.uploadErrorMessage = 'Paste quiz JSON before loading.';
+      return;
+    }
+
+    try {
+      this.loadQuizJson(this.pastedQuizJson);
+    } catch (error) {
+      this.quizSession.resetSession();
+      this.uploadErrorMessage = error instanceof Error
+        ? error.message
+        : 'Unable to read the pasted quiz JSON.';
+    }
   }
 
   async copyPrompt(): Promise<void> {
@@ -153,5 +167,15 @@ Put inside a code block and a JSON file if possible.
 
   private isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
+  }
+
+  private loadQuizJson(jsonText: string): void {
+    const parsedQuiz: unknown = JSON.parse(jsonText);
+
+    this.validateBasicQuizShape(parsedQuiz);
+
+    const quiz = this.quizService.parseQuizData(parsedQuiz);
+    this.quizSession.setQuiz(quiz);
+    this.uploadSuccessMessage = `"${quiz.title}" is ready.`;
   }
 }

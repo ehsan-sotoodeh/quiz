@@ -26,6 +26,24 @@
             (change)="onQuizFileSelected($event)"
           />
 
+          <div class="json-paste-area mt-4">
+            <label class="form-label fw-semibold" for="pastedQuizJson">Paste quiz JSON</label>
+            <textarea
+              id="pastedQuizJson"
+              class="form-control json-textarea"
+              rows="10"
+              placeholder="Paste valid quiz JSON here..."
+              [(ngModel)]="pastedQuizJson"
+            ></textarea>
+            <button
+              type="button"
+              class="btn btn-secondary mt-3"
+              (click)="loadPastedQuiz()"
+            >
+              Load Pasted JSON
+            </button>
+          </div>
+
           <div *ngIf="uploadSuccessMessage" class="alert alert-success mt-4 mb-0" role="alert">
             {{ uploadSuccessMessage }}
           </div>
