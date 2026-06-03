@@ -1,3 +1,18 @@
 import { Routes } from '@angular/router';
 
-export const routes: Routes = [];
+import { QuizComponent } from './pages/quiz/quiz.component';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: QuizComponent
+  },
+  {
+    path: 'quiz',
+    component: QuizComponent
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  }
+];

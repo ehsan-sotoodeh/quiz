@@ -1,0 +1,156 @@
+{
+  "id": "angular-basics",
+  "title": "Angular Basics Quiz",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is Angular primarily used for?",
+      "answers": [
+        {
+          "id": "q1-a1",
+          "answer": "Building client-side web applications",
+          "status": "correct",
+          "explanation": "Angular is a framework for building client-side applications with components, templates, routing, and services."
+        },
+        {
+          "id": "q1-a2",
+          "answer": "Managing database backups",
+          "status": "incorrect",
+          "explanation": "Database backups are usually handled by database tools or backend infrastructure, not Angular."
+        },
+        {
+          "id": "q1-a3",
+          "answer": "Compiling operating system kernels",
+          "status": "incorrect",
+          "explanation": "Angular runs in the web application layer and is not used to compile operating system kernels."
+        },
+        {
+          "id": "q1-a4",
+          "answer": "Replacing HTML with SQL",
+          "status": "incorrect",
+          "explanation": "Angular templates are based on HTML, while SQL is a database query language."
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "question": "Which Angular feature is commonly used to share data and logic across components?",
+      "answers": [
+        {
+          "id": "q2-a1",
+          "answer": "Service",
+          "status": "correct",
+          "explanation": "Angular services are commonly used to share reusable logic and data through dependency injection."
+        },
+        {
+          "id": "q2-a2",
+          "answer": "Stylesheet",
+          "status": "incorrect",
+          "explanation": "Stylesheets control visual presentation, not shared application logic."
+        },
+        {
+          "id": "q2-a3",
+          "answer": "Favicon",
+          "status": "incorrect",
+          "explanation": "A favicon is a small browser icon and does not share data between components."
+        },
+        {
+          "id": "q2-a4",
+          "answer": "Package lock file",
+          "status": "incorrect",
+          "explanation": "A package lock file records dependency versions and is not an Angular data-sharing feature."
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "question": "What does HttpClient help an Angular app do?",
+      "answers": [
+        {
+          "id": "q3-a1",
+          "answer": "Send HTTP requests and receive typed responses",
+          "status": "correct",
+          "explanation": "HttpClient is Angular's API for making HTTP requests and working with response data."
+        },
+        {
+          "id": "q3-a2",
+          "answer": "Draw custom fonts from scratch",
+          "status": "incorrect",
+          "explanation": "Fonts are handled through CSS and font files, not HttpClient."
+        },
+        {
+          "id": "q3-a3",
+          "answer": "Automatically write backend server code",
+          "status": "incorrect",
+          "explanation": "HttpClient can call a backend, but it does not generate backend code."
+        },
+        {
+          "id": "q3-a4",
+          "answer": "Replace routing configuration",
+          "status": "incorrect",
+          "explanation": "Routing is configured through Angular Router, not HttpClient."
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "question": "Which file type is commonly used for an Angular component template?",
+      "answers": [
+        {
+          "id": "q4-a1",
+          "answer": ".html",
+          "status": "correct",
+          "explanation": "Angular component templates are commonly written in HTML files."
+        },
+        {
+          "id": "q4-a2",
+          "answer": ".sql",
+          "status": "incorrect",
+          "explanation": "SQL files are used for database queries or scripts, not Angular templates."
+        },
+        {
+          "id": "q4-a3",
+          "answer": ".png",
+          "status": "incorrect",
+          "explanation": "PNG files are images, not component templates."
+        },
+        {
+          "id": "q4-a4",
+          "answer": ".lock",
+          "status": "incorrect",
+          "explanation": "Lock files are used for dependency version tracking, not template markup."
+        }
+      ]
+    },
+    {
+      "id": "q5",
+      "question": "In basic web development, what is CSS responsible for?",
+      "answers": [
+        {
+          "id": "q5-a1",
+          "answer": "Styling and layout",
+          "status": "correct",
+          "explanation": "CSS controls presentation details such as colors, spacing, typography, and layout."
+        },
+        {
+          "id": "q5-a2",
+          "answer": "Storing relational data",
+          "status": "incorrect",
+          "explanation": "Relational data is stored in databases, not CSS."
+        },
+        {
+          "id": "q5-a3",
+          "answer": "Serving HTTP responses from a backend",
+          "status": "incorrect",
+          "explanation": "Backend servers handle HTTP responses; CSS describes how the page should look."
+        },
+        {
+          "id": "q5-a4",
+          "answer": "Installing Angular packages",
+          "status": "incorrect",
+          "explanation": "Package managers such as npm install packages; CSS handles styling."
+        }
+      ]
+    }
+  ]
+}

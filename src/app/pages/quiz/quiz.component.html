@@ -1,0 +1,246 @@
+<section class="quiz-page">
+  <div class="container quiz-shell py-5">
+    <header class="quiz-header text-center mb-4">
+      <p class="text-uppercase text-muted small mb-2">JSON Quiz App</p>
+      <h1 class="display-title mb-2">Load a Quiz File</h1>
+      <p class="text-muted mb-0">
+        Choose a local JSON quiz file, answer each question, and review your score.
+      </p>
+    </header>
+
+    <div *ngIf="loading" class="card shadow-sm mb-4">
+      <div class="card-body p-4">
+        <p class="mb-0 text-muted">Loading quiz file...</p>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <ng-container *ngIf="!quiz && !loading">
+      <div class="card shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <p class="text-uppercase text-muted small mb-2">Upload</p>
+          <h2 class="h3 mb-3">Select a quiz JSON file</h2>
+          <p class="lead text-muted mb-4">
+            The file should include an id, title, questions, answers, answer status,
+            and explanations.
+          </p>
+
+          <label class="form-label fw-semibold" for="quizFile">Quiz file</label>
+          <input
+            id="quizFile"
+            class="form-control"
+            type="file"
+            accept=".json,application/json"
+            (change)="onQuizFileSelected($event)"
+          />
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="quiz as loadedQuiz">
+      <ng-container *ngIf="!hasStarted && !isFinished">
+        <div class="card shadow-sm">
+          <div class="card-body p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+              <div>
+                <p class="text-uppercase text-muted small mb-2">Ready</p>
+                <h2 class="h3 mb-2">{{ loadedQuiz.title }}</h2>
+                <p *ngIf="selectedFileName" class="text-muted small mb-0">
+                  Loaded from {{ selectedFileName }}
+                </p>
+              </div>
+
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="clearQuiz()">
+                Choose another file
+              </button>
+            </div>
+
+            <p class="lead text-muted mb-4">
+              Work through {{ loadedQuiz.questions.length }} questions. You can move backward,
+              change answers, and see a full review when you finish.
+            </p>
+
+            <div *ngIf="quizValidationMessage as validationMessage" class="alert alert-warning" role="alert">
+              {{ validationMessage }}
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-primary btn-lg"
+              [disabled]="!!quizValidationMessage"
+              (click)="startQuiz()"
+            >
+              Start Quiz
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="hasStarted && !isFinished">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <p class="text-uppercase text-muted small mb-2">Quiz</p>
+            <h1 class="h3 mb-4">{{ loadedQuiz.title }}</h1>
+
+            <div class="progress mb-3" aria-label="Quiz progress">
+              <div
+                class="progress-bar"
+                role="progressbar"
+                [style.width.%]="getProgressPercentage()"
+                [attr.aria-valuenow]="getProgressPercentage()"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
+
+            <p class="fw-semibold mb-4">
+              Question {{ currentQuestionIndex + 1 }} of {{ loadedQuiz.questions.length }}
+            </p>
+
+            <ng-container *ngIf="currentQuestion as question">
+              <h2 class="h5 mb-3">{{ question.question }}</h2>
+
+              <div *ngIf="question.answers.length === 0" class="alert alert-warning" role="alert">
+                This question does not have any answers yet.
+              </div>
+
+              <div *ngIf="question.answers.length > 0" class="answers mb-3">
+                <label
+                  *ngFor="let answer of question.answers"
+                  class="form-check answer-option"
+                  [class.answer-option-selected]="selectedAnswerId === answer.id"
+                  [for]="answer.id"
+                >
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    [id]="answer.id"
+                    [name]="question.id"
+                    [value]="answer.id"
+                    [checked]="selectedAnswerId === answer.id"
+                    (change)="selectAnswer(answer.id)"
+                  />
+                  <span class="form-check-label">
+                    {{ answer.answer }}
+                  </span>
+                </label>
+              </div>
+
+              <p *ngIf="!hasSelectedCurrentQuestion()" id="answer-help" class="text-muted small mb-4">
+                Select an answer to continue.
+              </p>
+
+              <div class="d-flex justify-content-between gap-3">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  [disabled]="currentQuestionIndex === 0"
+                  (click)="goToPreviousQuestion()"
+                >
+                  Previous
+                </button>
+
+                <button
+                  *ngIf="!isLastQuestion"
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="!hasSelectedCurrentQuestion()"
+                  (click)="goToNextQuestion()"
+                >
+                  Next
+                </button>
+
+                <button
+                  *ngIf="isLastQuestion"
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="!hasSelectedCurrentQuestion()"
+                  (click)="finishQuiz()"
+                >
+                  Finish
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="isFinished && quizResult as result">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body p-4 p-md-5">
+            <p class="text-uppercase text-muted small mb-2">Results</p>
+            <h1 class="h3 mb-3">{{ result.quizTitle }}</h1>
+
+            <div class="alert mb-4" [ngClass]="result.scorePercentage >= 70 ? 'alert-success' : 'alert-danger'">
+              <strong>{{ result.scorePercentage }}%</strong>
+              score
+            </div>
+
+            <div class="result-summary mb-4">
+              <div class="summary-card">
+                <span class="d-block text-muted small">Correct</span>
+                <strong class="text-success">{{ result.correctAnswers }}</strong>
+              </div>
+              <div class="summary-card">
+                <span class="d-block text-muted small">Incorrect</span>
+                <strong class="text-danger">{{ result.incorrectAnswers }}</strong>
+              </div>
+              <div class="summary-card">
+                <span class="d-block text-muted small">Total</span>
+                <strong>{{ result.totalQuestions }}</strong>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3">
+              <button type="button" class="btn btn-primary" (click)="restartQuiz()">
+                Restart
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="clearQuiz()">
+                Load another quiz
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngFor="let questionResult of result.questionResults; let resultIndex = index"
+          class="card shadow-sm review-card"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+              <h2 class="h5 mb-0">
+                {{ resultIndex + 1 }}. {{ questionResult.question }}
+              </h2>
+              <span
+                class="badge"
+                [ngClass]="questionResult.isCorrect ? 'text-bg-success' : 'text-bg-danger'"
+              >
+                {{ questionResult.isCorrect ? 'Correct' : 'Incorrect' }}
+              </span>
+            </div>
+
+            <p class="mb-2">
+              <span class="text-muted">Your answer:</span>
+              <strong [ngClass]="questionResult.isCorrect ? 'text-success' : 'text-danger'">
+                {{ questionResult.selectedAnswerText || 'No answer selected' }}
+              </strong>
+            </p>
+
+            <p class="mb-2">
+              <span class="text-muted">Correct answer:</span>
+              <strong class="text-success">{{ questionResult.correctAnswerText }}</strong>
+            </p>
+
+            <p class="mb-0">
+              <span class="text-muted">Explanation:</span>
+              {{ questionResult.explanation || 'No explanation available.' }}
+            </p>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</section>
