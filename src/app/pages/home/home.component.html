@@ -17,31 +17,60 @@
             Choose a local JSON file. The app reads it in your browser and stores it for the quiz route.
           </p>
 
-          <label class="form-label fw-semibold" for="quizFile">Quiz file</label>
-          <input
-            id="quizFile"
-            class="form-control"
-            type="file"
-            accept=".json,application/json"
-            (change)="onQuizFileSelected($event)"
-          />
+          <div class="load-tabs mb-4" role="tablist" aria-label="Quiz loading options">
+            <button
+              type="button"
+              class="load-tab"
+              [class.load-tab-active]="activeLoadTab === 'upload'"
+              [attr.aria-selected]="activeLoadTab === 'upload'"
+              role="tab"
+              (click)="setLoadTab('upload')"
+            >
+              Upload file
+            </button>
+            <button
+              type="button"
+              class="load-tab"
+              [class.load-tab-active]="activeLoadTab === 'paste'"
+              [attr.aria-selected]="activeLoadTab === 'paste'"
+              role="tab"
+              (click)="setLoadTab('paste')"
+            >
+              Paste JSON
+            </button>
+          </div>
 
-          <div class="json-paste-area mt-4">
-            <label class="form-label fw-semibold" for="pastedQuizJson">Paste quiz JSON</label>
+          <div *ngIf="activeLoadTab === 'upload'" class="load-panel" role="tabpanel">
+            <h3 class="h6 mb-1">Upload a JSON file</h3>
+            <p class="text-muted small mb-3">
+              Best when you already saved the generated quiz as a local file.
+            </p>
+
+            <label class="form-label fw-semibold" for="quizFile">Quiz file</label>
+            <input
+              id="quizFile"
+              class="form-control"
+              type="file"
+              accept=".json,application/json"
+              (change)="onQuizFileSelected($event)"
+            />
+          </div>
+
+          <div *ngIf="activeLoadTab === 'paste'" class="load-panel" role="tabpanel">
+            <h3 class="h6 mb-1">Paste JSON directly</h3>
+            <p class="text-muted small mb-3">
+              Fastest when you copied the quiz output and want to load it immediately.
+            </p>
+
+            <label class="form-label fw-semibold" for="pastedQuizJson">Quiz JSON</label>
             <textarea
               id="pastedQuizJson"
               class="form-control json-textarea"
               rows="10"
               placeholder="Paste valid quiz JSON here..."
               [(ngModel)]="pastedQuizJson"
+              (ngModelChange)="onPastedQuizJsonChange()"
             ></textarea>
-            <button
-              type="button"
-              class="btn btn-secondary mt-3"
-              (click)="loadPastedQuiz()"
-            >
-              Load Pasted JSON
-            </button>
           </div>
 
           <div *ngIf="uploadSuccessMessage" class="alert alert-success mt-4 mb-0" role="alert">

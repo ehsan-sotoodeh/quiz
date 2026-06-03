@@ -14,6 +14,7 @@ import { QuizSessionService } from '../../services/quiz-session.service';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
+  activeLoadTab: 'upload' | 'paste' = 'upload';
   topic = 'Angular components and routing';
   numberOfQuestions = 10;
   difficultyLevel: 'easy' | 'medium' | 'hard' | 'mixed' = 'medium';
@@ -22,9 +23,14 @@ export class HomeComponent {
   uploadErrorMessage: string | null = null;
   copyMessage: string | null = null;
   pastedQuizJson = '';
+  private pasteLoadTimeout: ReturnType<typeof setTimeout> | null = null;
 
   private readonly quizService = inject(QuizService);
   private readonly quizSession = inject(QuizSessionService);
+
+  setLoadTab(tab: 'upload' | 'paste'): void {
+    this.activeLoadTab = tab;
+  }
 
   get samplePrompt(): string {
     const topic = this.topic.trim() || 'Angular components and routing';
@@ -81,6 +87,7 @@ Explanations must clearly explain why the selected answer is correct or incorrec
 Do not use trailing commas.
 Do not include any text before or after the JSON.
 Put inside a code block and a JSON file if possible.
+Make sure the order of answers in the JSON is randomized.
 `;
   }
 
@@ -124,7 +131,7 @@ Put inside a code block and a JSON file if possible.
     this.uploadErrorMessage = null;
 
     if (this.pastedQuizJson.trim().length === 0) {
-      this.uploadErrorMessage = 'Paste quiz JSON before loading.';
+      this.quizSession.resetSession();
       return;
     }
 
@@ -136,6 +143,16 @@ Put inside a code block and a JSON file if possible.
         ? error.message
         : 'Unable to read the pasted quiz JSON.';
     }
+  }
+
+  onPastedQuizJsonChange(): void {
+    if (this.pasteLoadTimeout) {
+      clearTimeout(this.pasteLoadTimeout);
+    }
+
+    this.pasteLoadTimeout = setTimeout(() => {
+      this.loadPastedQuiz();
+    }, 500);
   }
 
   async copyPrompt(): Promise<void> {

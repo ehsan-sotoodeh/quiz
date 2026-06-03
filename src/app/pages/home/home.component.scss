@@ -25,6 +25,38 @@
   border-radius: 0.5rem;
 }
 
+.load-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.35rem;
+  border: 1px solid #dfe5ee;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.load-tab {
+  padding: 0.65rem 0.85rem;
+  color: #506078;
+  font-weight: 600;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+}
+
+.load-tab-active {
+  color: #0d6efd;
+  background: #ffffff;
+  box-shadow: 0 0.5rem 1.25rem rgba(27, 39, 63, 0.08);
+}
+
+.load-panel {
+  padding: 1rem;
+  border: 1px solid #dfe5ee;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
 .prompt-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -33,7 +65,7 @@
 
 .prompt-box {
   min-height: 12rem;
-  max-height: 34rem;
+  max-height: 20rem;
   padding: 1rem;
   overflow: auto;
   white-space: pre-wrap;
