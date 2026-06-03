@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 
 import { AnswerStatus, Quiz, QuizAnswer, QuizQuestion } from '../models/quiz.model';
 
@@ -6,11 +8,18 @@ import { AnswerStatus, Quiz, QuizAnswer, QuizQuestion } from '../models/quiz.mod
   providedIn: 'root'
 })
 export class QuizService {
-  async loadQuizFromFile(file: File): Promise<Quiz> {
-    const fileContents = await file.text();
-    const parsedQuiz: unknown = JSON.parse(fileContents);
+  private readonly defaultQuizUrl = 'assets/quizzes/angular-basics.json';
 
-    return this.parseQuiz(parsedQuiz);
+  constructor(private readonly http: HttpClient) {}
+
+  loadDefaultQuiz(): Observable<Quiz> {
+    return this.http.get<unknown>(this.defaultQuizUrl).pipe(
+      map((quizData) => this.parseQuizData(quizData))
+    );
+  }
+
+  parseQuizData(value: unknown): Quiz {
+    return this.parseQuiz(value);
   }
 
   private parseQuiz(value: unknown): Quiz {

@@ -1,0 +1,95 @@
+<section class="report-page">
+  <div class="container page-shell py-5">
+    <header class="text-center mb-4">
+      <p class="text-uppercase text-muted small mb-2">Report</p>
+      <h1 class="display-title mb-2">Quiz Report</h1>
+      <p class="text-muted mb-0">Review your score and download the quiz report.</p>
+    </header>
+
+    <ng-container *ngIf="quizResult as result; else noReport">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-4 p-md-5">
+          <p class="text-uppercase text-muted small mb-2">Results</p>
+          <h2 class="h3 mb-3">{{ result.quizTitle }}</h2>
+
+          <div class="alert mb-4" [ngClass]="result.scorePercentage >= 70 ? 'alert-success' : 'alert-danger'">
+            <strong>{{ result.scorePercentage }}%</strong>
+            score
+          </div>
+
+          <div class="result-summary mb-4">
+            <div class="summary-card">
+              <span class="d-block text-muted small">Correct</span>
+              <strong class="text-success">{{ result.correctAnswers }}</strong>
+            </div>
+            <div class="summary-card">
+              <span class="d-block text-muted small">Incorrect</span>
+              <strong class="text-danger">{{ result.incorrectAnswers }}</strong>
+            </div>
+            <div class="summary-card">
+              <span class="d-block text-muted small">Total</span>
+              <strong>{{ result.totalQuestions }}</strong>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-3">
+            <button type="button" class="btn btn-primary" (click)="downloadReport()">
+              Download JSON Report
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="retakeQuiz()">
+              Retake Quiz
+            </button>
+            <a routerLink="/" class="btn btn-outline-secondary">
+              Back Home
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngFor="let questionResult of result.questionResults; let resultIndex = index"
+        class="card shadow-sm review-card"
+      >
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+            <h2 class="h5 mb-0">
+              {{ resultIndex + 1 }}. {{ questionResult.question }}
+            </h2>
+            <span
+              class="badge"
+              [ngClass]="questionResult.isCorrect ? 'text-bg-success' : 'text-bg-danger'"
+            >
+              {{ questionResult.isCorrect ? 'Correct' : 'Incorrect' }}
+            </span>
+          </div>
+
+          <p class="mb-2">
+            <span class="text-muted">Your answer:</span>
+            <strong [ngClass]="questionResult.isCorrect ? 'text-success' : 'text-danger'">
+              {{ questionResult.selectedAnswerText || 'No answer selected' }}
+            </strong>
+          </p>
+
+          <p class="mb-2">
+            <span class="text-muted">Correct answer:</span>
+            <strong class="text-success">{{ questionResult.correctAnswerText }}</strong>
+          </p>
+
+          <p class="mb-0">
+            <span class="text-muted">Explanation:</span>
+            {{ questionResult.explanation || 'No explanation available.' }}
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noReport>
+      <div class="alert alert-warning" role="alert">
+        No report available yet.
+      </div>
+      <a routerLink="/quiz" class="btn btn-primary">
+        Go to Quiz
+      </a>
+    </ng-template>
+  </div>
+</section>

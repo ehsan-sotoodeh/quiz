@@ -1,53 +1,52 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 
 import { Quiz, QuizAnswer, QuizQuestion, QuizResult, UserAnswer } from '../../models/quiz.model';
 import { QuizService } from '../../services/quiz.service';
+import { QuizSessionService } from '../../services/quiz-session.service';
 
 @Component({
   selector: 'app-quiz',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './quiz.component.html',
   styleUrl: './quiz.component.scss'
 })
-export class QuizComponent {
+export class QuizComponent implements OnInit {
   quiz: Quiz | null = null;
   currentQuestionIndex = 0;
   userAnswers: UserAnswer[] = [];
-  loading = false;
+  loading = true;
   errorMessage: string | null = null;
-  selectedFileName: string | null = null;
   hasStarted = false;
-  isFinished = false;
-  quizResult: QuizResult | null = null;
 
   private readonly quizService = inject(QuizService);
+  private readonly quizSession = inject(QuizSessionService);
+  private readonly router = inject(Router);
 
-  async onQuizFileSelected(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+  ngOnInit(): void {
+    const sessionQuiz = this.quizSession.getQuiz();
 
-    if (!file) {
+    if (sessionQuiz) {
+      this.quiz = sessionQuiz;
+      this.userAnswers = this.quizSession.getUserAnswers();
+      this.hasStarted = this.userAnswers.length > 0;
+      this.loading = false;
       return;
     }
 
-    this.loading = true;
-    this.errorMessage = null;
-    this.selectedFileName = file.name;
-
-    try {
-      this.quiz = await this.quizService.loadQuizFromFile(file);
-      this.resetQuizProgress(false);
-    } catch (error) {
-      this.quiz = null;
-      this.selectedFileName = null;
-      this.errorMessage = error instanceof Error
-        ? error.message
-        : 'Unable to read the selected quiz file.';
-    } finally {
-      this.loading = false;
-      input.value = '';
-    }
+    this.quizService.loadDefaultQuiz().subscribe({
+      next: (quiz) => {
+        this.quizSession.setQuiz(quiz);
+        this.quiz = quiz;
+        this.userAnswers = [];
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load the default quiz. You can upload a quiz from the home page.';
+        this.loading = false;
+      }
+    });
   }
 
   get currentQuestion(): QuizQuestion | null {
@@ -109,13 +108,14 @@ export class QuizComponent {
 
     if (existingAnswer) {
       existingAnswer.selectedAnswerId = answerId;
-      return;
+    } else {
+      this.userAnswers.push({
+        questionId: question.id,
+        selectedAnswerId: answerId
+      });
     }
 
-    this.userAnswers.push({
-      questionId: question.id,
-      selectedAnswerId: answerId
-    });
+    this.quizSession.setUserAnswers(this.userAnswers);
   }
 
   getUserAnswer(questionId: string): UserAnswer | undefined {
@@ -167,31 +167,12 @@ export class QuizComponent {
     }
 
     try {
-      this.quizResult = this.calculateResult();
-      this.isFinished = true;
+      const result = this.calculateResult();
+      this.quizSession.setQuizResult(result);
+      void this.router.navigate(['/report']);
     } catch {
       this.errorMessage = 'Unable to calculate the quiz result. Please check the quiz data.';
     }
-  }
-
-  restartQuiz(): void {
-    this.resetQuizProgress(true);
-  }
-
-  clearQuiz(): void {
-    this.quiz = null;
-    this.selectedFileName = null;
-    this.errorMessage = null;
-    this.resetQuizProgress(false);
-  }
-
-  private resetQuizProgress(hasStarted: boolean): void {
-    this.currentQuestionIndex = 0;
-    this.userAnswers = [];
-    this.hasStarted = hasStarted;
-    this.isFinished = false;
-    this.quizResult = null;
-    this.errorMessage = null;
   }
 
   calculateResult(): QuizResult {

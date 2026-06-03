@@ -1,0 +1,47 @@
+.report-page {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, #eef4ff 0%, #f7f8fa 38%, #ffffff 100%);
+}
+
+.page-shell {
+  max-width: 860px;
+}
+
+.display-title {
+  color: #172033;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.card {
+  border-color: #dfe5ee;
+  border-radius: 0.5rem;
+}
+
+.result-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.summary-card {
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.review-card + .review-card {
+  margin-top: 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .display-title {
+    font-size: 1.75rem;
+  }
+
+  .result-summary {
+    grid-template-columns: 1fr;
+  }
+}
