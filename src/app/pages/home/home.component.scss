@@ -25,9 +25,17 @@
   border-radius: 0.5rem;
 }
 
+.prompt-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
 .prompt-box {
   min-height: 12rem;
+  max-height: 34rem;
   padding: 1rem;
+  overflow: auto;
   white-space: pre-wrap;
   border: 1px solid #dee2e6;
   border-radius: 0.5rem;

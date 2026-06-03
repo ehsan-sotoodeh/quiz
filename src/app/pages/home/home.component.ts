@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { Quiz } from '../../models/quiz.model';
@@ -8,12 +9,14 @@ import { QuizSessionService } from '../../services/quiz-session.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  readonly samplePrompt = 'Generate a quiz JSON object with this structure: id, title, questions. Each question must have id, question, answers. Each answer must have id, answer, status as correct or incorrect, and explanation. Create 10 questions about Angular basics. Return only valid JSON.';
+  topic = 'Angular components and routing';
+  numberOfQuestions = 10;
+  difficultyLevel: 'easy' | 'medium' | 'hard' | 'mixed' = 'medium';
 
   uploadSuccessMessage: string | null = null;
   uploadErrorMessage: string | null = null;
@@ -21,6 +24,64 @@ export class HomeComponent {
 
   private readonly quizService = inject(QuizService);
   private readonly quizSession = inject(QuizSessionService);
+
+  get samplePrompt(): string {
+    const topic = this.topic.trim() || 'Angular components and routing';
+    const numberOfQuestions = this.numberOfQuestions > 0 ? this.numberOfQuestions : 10;
+
+    return `Generate a quiz as a valid JSON object compatible with my Angular quiz app.
+
+Topic: ${topic}
+Number of questions: ${numberOfQuestions}
+Difficulty level: ${this.difficultyLevel}
+
+Return only valid JSON. Do not include markdown, explanations outside the JSON, comments, or code fences.
+
+The JSON must follow this exact structure:
+
+{
+"id": "string-id-for-the-quiz",
+"title": "Human readable quiz title",
+"questions": [
+{
+"id": "q1",
+"question": "Question text goes here",
+"answers": [
+{
+"id": "q1-a1",
+"answer": "Answer option text",
+"status": "correct",
+"explanation": "Explain why this answer is correct."
+},
+{
+"id": "q1-a2",
+"answer": "Answer option text",
+"status": "incorrect",
+"explanation": "Explain why this answer is incorrect."
+}
+]
+}
+]
+}
+
+Rules:
+
+The root object must have exactly: id, title, questions.
+questions must be an array.
+Each question must have exactly: id, question, answers.
+Each answer must have exactly: id, answer, status, explanation.
+status must be either "correct" or "incorrect".
+Each question must have exactly one answer with status "correct".
+Each question should have 4 answer options.
+All ids must be strings.
+Use ids like q1, q2, q3 for questions.
+Use ids like q1-a1, q1-a2, q1-a3, q1-a4 for answers.
+Explanations must clearly explain why the selected answer is correct or incorrect.
+Do not use trailing commas.
+Do not include any text before or after the JSON.
+Put inside a code block and a JSON file if possible.
+`;
+  }
 
   onQuizFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

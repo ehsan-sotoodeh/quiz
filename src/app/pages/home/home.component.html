@@ -50,6 +50,43 @@
             Use this prompt with your preferred generator, then upload the returned JSON.
           </p>
 
+          <div class="prompt-controls mb-4">
+            <div>
+              <label class="form-label fw-semibold" for="promptTopic">Topic</label>
+              <input
+                id="promptTopic"
+                class="form-control"
+                type="text"
+                [(ngModel)]="topic"
+              />
+            </div>
+
+            <div>
+              <label class="form-label fw-semibold" for="questionCount">Number of questions</label>
+              <input
+                id="questionCount"
+                class="form-control"
+                type="number"
+                min="1"
+                [(ngModel)]="numberOfQuestions"
+              />
+            </div>
+
+            <div>
+              <label class="form-label fw-semibold" for="difficultyLevel">Difficulty level</label>
+              <select
+                id="difficultyLevel"
+                class="form-select"
+                [(ngModel)]="difficultyLevel"
+              >
+                <option value="easy">easy</option>
+                <option value="medium">medium</option>
+                <option value="hard">hard</option>
+                <option value="mixed">mixed</option>
+              </select>
+            </div>
+          </div>
+
           <pre class="prompt-box mb-3"><code>{{ samplePrompt }}</code></pre>
 
           <div class="d-flex align-items-center gap-3">
